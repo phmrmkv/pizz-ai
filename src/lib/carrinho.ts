@@ -35,7 +35,7 @@ function lerSalvo(): readonly ItemCarrinho[] {
       const pizzaId = Number(d?.pizzaId);
       const tamanho = Number(d?.tamanho);
       const qt = Number(d?.qt);
-      if (!pizzaPorId(pizzaId) || ![0, 1, 2].includes(tamanho) || !Number.isFinite(qt)) continue;
+      if (!pizzaPorId(pizzaId) || ![0, 1, 2].includes(tamanho) || !Number.isFinite(qt) || qt < 1) continue;
       if (lista.some((i) => i.pizzaId === pizzaId && i.tamanho === tamanho)) continue;
       lista.push({ pizzaId, tamanho: tamanho as TamanhoId, qt: limitar(qt) });
     }
@@ -83,6 +83,10 @@ export function alterarQuantidade(pizzaId: number, tamanho: TamanhoId, delta: nu
 
 export function remover(pizzaId: number, tamanho: TamanhoId) {
   definir(itens.filter((i) => !(i.pizzaId === pizzaId && i.tamanho === tamanho)));
+}
+
+export function quantidadeNoCarrinho(pizzaId: number, tamanho: TamanhoId): number {
+  return itens.find((i) => i.pizzaId === pizzaId && i.tamanho === tamanho)?.qt ?? 0;
 }
 
 export function precoUnitario(pizzaId: number, tamanho: TamanhoId): number {

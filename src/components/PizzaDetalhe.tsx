@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { MinusIcon, PlusIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { brl, pizzas, tamanhos, type Pizza, type TamanhoId } from '@/data/catalogo';
-import { QT_MAX, adicionar } from '@/lib/carrinho';
+import { QT_MAX, adicionar, quantidadeNoCarrinho } from '@/lib/carrinho';
 import { useMudou } from '@/lib/useMudou';
 
 /** As fotos chegam do Astro já otimizadas (<Picture>), uma por pizza, nos slots p1, p2, ... */
@@ -22,11 +22,14 @@ export default function PizzaDetalhe(props: Props) {
   const [tamanho, setTamanho] = useState<TamanhoId>(2);
   const [qt, setQt] = useState(1);
   const qtMudou = useMudou(qt);
+  // Elemento que tinha o foco ao abrir: o foco volta para ele ao fechar (não há DialogTrigger).
+  const origem = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     const abrir = (slug: string) => {
       const achada = pizzas.find((p) => p.slug === slug);
       if (!achada) return;
+      origem.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
       setPizza(achada);
       setTamanho(2);
       setQt(1);
@@ -46,9 +49,11 @@ export default function PizzaDetalhe(props: Props) {
 
   const confirmar = () => {
     if (!pizza) return;
+    const antes = quantidadeNoCarrinho(pizza.id, tamanho);
     adicionar(pizza.id, tamanho, qt);
+    const somada = quantidadeNoCarrinho(pizza.id, tamanho) - antes;
     toast.success('Adicionada ao carrinho', {
-      description: `${qt} × ${pizza.nome} (${tamanhos[tamanho].nome})`,
+      description: `${somada} × ${pizza.nome} (${tamanhos[tamanho].nome})`,
     });
     setAberto(false);
   };
@@ -58,6 +63,10 @@ export default function PizzaDetalhe(props: Props) {
       <DialogContent
         className="max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto p-0 sm:max-w-3xl"
         rotuloFechar="Fechar"
+        onCloseAutoFocus={(e) => {
+          e.preventDefault();
+          origem.current?.focus();
+        }}
       >
         {pizza && (
           <div className="grid sm:grid-cols-2">
@@ -111,8 +120,8 @@ export default function PizzaDetalhe(props: Props) {
                   >
                     <MinusIcon className="size-4" aria-hidden="true" />
                   </button>
-                  <output key={qt} data-muda={qtMudou} className="passo-num min-w-8 text-center text-base font-semibold tabular-nums" aria-live="polite">
-                    {qt}
+                  <output className="min-w-8 text-center text-base font-semibold tabular-nums" aria-live="polite">
+                    <span key={qt} data-muda={qtMudou} className="passo-num inline-block">{qt}</span>
                   </output>
                   <button
                     type="button"

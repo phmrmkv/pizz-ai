@@ -31,7 +31,8 @@ const imagem = ogImage ? new URL(ogImage, Astro.site) : undefined;
         function mudou(e) {
           if (!salvo()) d.dataset.theme = e.matches ? 'dark' : 'light';
         }
-        m.addEventListener('change', mudou);
+        if (m.addEventListener) m.addEventListener('change', mudou);
+        else if (m.addListener) m.addListener(mudou);
         d.classList.add('js');
       })();
     </script>

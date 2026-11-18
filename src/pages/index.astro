@@ -1,7 +1,8 @@
 ---
 import { Picture, getImage } from 'astro:assets';
 import Base from '@/layouts/Base.astro';
-import TemaAlternar from '@/components/TemaAlternar.astro';
+import Cabecalho from '@/components/Cabecalho.astro';
+import Rodape from '@/components/Rodape.astro';
 import CarrinhoSheet from '@/components/CarrinhoSheet';
 import PizzaDetalhe from '@/components/PizzaDetalhe';
 import { DESCONTO, brl, pizzas } from '@/data/catalogo';
@@ -20,19 +21,11 @@ const apartirDe = (precos: readonly number[]) => brl(Math.min(...precos));
 <Base
   title="Projeto Pizzaria: cardápio de pizzas"
   description="Escolha o sabor e o tamanho da pizza, monte o carrinho e veja o total com desconto. Projeto de estudo, nada é cobrado."
-  ogImage="/og-image.png"
+  ogImage="/og-image.jpg"
 >
-  <header slot="topo" class="cabecalho sticky top-0 z-40" data-cabecalho>
-    <div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4">
-      <a href="/" class="press -mx-2 inline-flex min-h-11 items-center rounded-lg px-2 text-base font-bold tracking-tight whitespace-nowrap sm:text-lg">
-        Projeto Pizzaria
-      </a>
-      <div class="flex items-center gap-2">
-        <TemaAlternar />
-        <CarrinhoSheet client:load miniaturas={miniaturas} />
-      </div>
-    </div>
-  </header>
+  <Cabecalho slot="topo">
+    <CarrinhoSheet client:load miniaturas={miniaturas} />
+  </Cabecalho>
 
   <div class="mx-auto max-w-6xl px-4 pt-10 pb-16 sm:pt-14">
     <h1
@@ -59,6 +52,8 @@ const apartirDe = (precos: readonly number[]) => brl(Math.min(...precos));
                 <Picture
                   src={imagens[p.slug]}
                   alt={`Pizza ${p.nome} vista de cima`}
+                  width={416}
+                  height={416}
                   widths={[208, 416]}
                   sizes="208px"
                   formats={['avif', 'webp']}
@@ -98,6 +93,8 @@ const apartirDe = (precos: readonly number[]) => brl(Math.min(...precos));
           slot={`p${p.id}`}
           src={imagens[p.slug]}
           alt={`Pizza ${p.nome} vista de cima`}
+          width={576}
+          height={576}
           widths={[288, 576]}
           sizes="(min-width: 640px) 288px, 224px"
           formats={['avif', 'webp']}
@@ -110,13 +107,5 @@ const apartirDe = (precos: readonly number[]) => brl(Math.min(...precos));
     }
   </PizzaDetalhe>
 
-  <footer slot="rodape" class="border-t border-border bg-card">
-    <div class="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-8 text-sm text-muted-foreground">
-      <p>Site de demonstração de estudo, sem atendimento real. Nada é cobrado nem enviado.</p>
-      <p>
-        Projeto de estudo de Paulo H. M. Rabelo ·
-        <a href="https://phmr.libertycondominio.online" rel="noopener" class="link-texto text-foreground">PHMR Tech Solutions</a>
-      </p>
-    </div>
-  </footer>
+  <Rodape slot="rodape" />
 </Base>
