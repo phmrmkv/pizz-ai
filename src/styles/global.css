@@ -1,0 +1,390 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+/* Identidade do projeto original: azul #399ade (cabeçalho), azul claro #a9dcff (botão do carrinho),
+   laranja do título, verde dos botões de compra e fundo cinza claro #EEE.
+   O azul e o verde originais não dão contraste com texto branco (2,9:1 e 2,2:1): nos botões com
+   texto branco usamos versões mais escuras; as cores originais ficam em fundos com texto escuro. */
+:root {
+  color-scheme: light;
+  --radius: 0.875rem;
+
+  --laranja: #ffa500;     /* selo do título (original) */
+  --tinta-laranja: #2a1700;
+
+  --background: #eeeeee;
+  --foreground: #101820;
+  --card: #ffffff;
+  --card-foreground: #101820;
+  --popover: #ffffff;
+  --popover-foreground: #101820;
+  --primary: #1766a0;
+  --primary-foreground: #ffffff;
+  --secondary: #e3e8ec;
+  --secondary-foreground: #101820;
+  --muted: #e3e8ec;
+  --muted-foreground: #4a5560;
+  --accent: #dbe7f0;
+  --accent-foreground: #101820;
+  --destructive: #b3261e;
+  --border: #cdd5db;
+  --input: #6f7b86; /* borda de controle, >= 3:1 sobre branco e sobre o fundo */
+  --ring: #1766a0;
+
+  --cabecalho: #399ade;         /* azul original */
+  --cabecalho-texto: #06263d;
+  --carrinho-fundo: #a9dcff;    /* azul claro original */
+  --carrinho-fundo-hover: #8fcff9;
+  --carrinho-texto: #06263d;
+  --compra: #1f7a35;            /* verde dos botões de compra, com texto branco */
+  --compra-hover: #17612a;
+  --compra-texto: #ffffff;
+  --sombra-pizza: rgb(0 0 0 / 0.2);
+  --bolha: #eeeeee;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --background: #0c1822;
+  --foreground: #e7f1f8;
+  --card: #13242f;
+  --card-foreground: #e7f1f8;
+  --popover: #13242f;
+  --popover-foreground: #e7f1f8;
+  --primary: #5fb8f2;
+  --primary-foreground: #04202f;
+  --secondary: #1a2f3d;
+  --secondary-foreground: #e7f1f8;
+  --muted: #1a2f3d;
+  --muted-foreground: #a3b5c3;
+  --accent: #1d3646;
+  --accent-foreground: #e7f1f8;
+  --destructive: #ff9a8f;
+  --border: #25394a;
+  --input: #6b8497;
+  --ring: #5fb8f2;
+
+  --cabecalho: #11303f;
+  --cabecalho-texto: #e7f1f8;
+  --carrinho-fundo: #1d4a63;
+  --carrinho-fundo-hover: #255a78;
+  --carrinho-texto: #e7f1f8;
+  --compra: #48d05f;            /* verde original, com texto escuro */
+  --compra-hover: #6adc7d;
+  --compra-texto: #052e12;
+  --sombra-pizza: rgb(0 0 0 / 0.55);
+  --bolha: #1a2f3d;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-compra: var(--compra);
+  --color-compra-texto: var(--compra-texto);
+  --color-laranja: var(--laranja);
+  --color-bolha: var(--bolha);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter Variable", "Inter", system-ui, "Segoe UI", Roboto, sans-serif;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Transições: tokens do guia docs/transicoes.md
+   Curva única: cubic-bezier(0.22, 1, 0.36, 1). Fechar é mais rápido que abrir.
+------------------------------------------------------------------- */
+:root {
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-quick: cubic-bezier(0.4, 0, 1, 1);
+
+  --dur-enter: 400ms;
+  --dur-enter-text: 500ms;
+  --dur-stagger: 40ms;
+  --distance-enter: 12px;
+  --blur-enter: 2px;
+
+  --dur-hover: 350ms;
+  --dur-hover-fast: 150ms;
+  --dur-press: 100ms;
+  --press-scale: 0.97;
+
+  --dur-layout: 250ms;
+  --dur-header: 250ms;
+
+  --dur-open: 250ms;
+  --dur-close: 150ms;
+  --modal-scale: 0.96;
+
+  --dur-toast-open: 350ms;
+  --dur-toast-close: 250ms;
+  --lift: -3px;
+  --nudge: 2px;
+}
+
+/* Regras de movimento fora de @layer: vencem as utilitárias do tw-animate-css sem !important. */
+[data-slot="dialog-content"][data-state="open"] {
+  animation: dlg-in var(--dur-open) var(--ease-out-soft);
+}
+[data-slot="dialog-content"][data-state="closed"] {
+  animation: dlg-out var(--dur-close) var(--ease-out-soft) forwards;
+}
+[data-slot="dialog-overlay"][data-state="open"],
+[data-slot="sheet-overlay"][data-state="open"] {
+  animation: fade-in-soft var(--dur-open) var(--ease-out-soft);
+}
+[data-slot="dialog-overlay"][data-state="closed"],
+[data-slot="sheet-overlay"][data-state="closed"] {
+  animation: fade-out-soft var(--dur-close) var(--ease-out-soft) forwards;
+}
+[data-slot="sheet-content"][data-state="open"] {
+  animation: sheet-in var(--dur-open) var(--ease-out-soft);
+}
+[data-slot="sheet-content"][data-state="closed"] {
+  animation: sheet-out var(--dur-close) var(--ease-in-quick) forwards;
+}
+
+[data-sonner-toast] {
+  transition-duration: var(--dur-toast-open) !important;
+  transition-timing-function: var(--ease-out-soft) !important;
+}
+[data-sonner-toast][data-removed="true"] { transition-duration: var(--dur-toast-close) !important; }
+[data-sonner-toast] [data-description] { color: var(--muted-foreground) !important; }
+
+@keyframes dlg-in { from { opacity: 0; scale: var(--modal-scale); } }
+@keyframes dlg-out { to { opacity: 0; scale: var(--modal-scale); } }
+@keyframes fade-in-soft { from { opacity: 0; } }
+@keyframes fade-out-soft { to { opacity: 0; } }
+@keyframes sheet-in { from { transform: translateX(100%); } }
+@keyframes sheet-out { to { transform: translateX(100%); } }
+
+/* Reveal ao rolar: só existe com JS (classe .js no <html>); sem JS o conteúdo aparece normal. */
+.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(var(--distance-enter));
+  filter: blur(var(--blur-enter));
+  transition:
+    opacity var(--dur-enter-text) var(--ease-out-soft),
+    transform var(--dur-enter-text) var(--ease-out-soft),
+    filter var(--dur-enter-text) var(--ease-out-soft);
+  transition-delay: calc(var(--i, 0) * var(--dur-stagger));
+}
+.js [data-reveal].is-shown { opacity: 1; transform: none; filter: none; }
+
+/* Botão pressionado */
+.press {
+  transition:
+    transform var(--dur-press) var(--ease-out-soft),
+    background-color var(--dur-hover-fast) var(--ease-out-soft),
+    color var(--dur-hover-fast) var(--ease-out-soft),
+    border-color var(--dur-hover-fast) var(--ease-out-soft);
+}
+.press:active { transform: scale(var(--press-scale)); }
+
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.js) { scroll-behavior: smooth; }
+}
+
+html { -webkit-text-size-adjust: 100%; }
+body { text-rendering: optimizeLegibility; }
+
+/* ------------------------------------------------------------------
+   Página (fora de @layer, como as regras de movimento)
+------------------------------------------------------------------- */
+
+/* Cabeçalho azul do original; a borda aparece ao rolar (só opacity) */
+.cabecalho { isolation: isolate; background: var(--cabecalho); color: var(--cabecalho-texto); }
+.cabecalho::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 1px;
+  background: var(--cabecalho-texto);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-header) var(--ease-out-soft);
+}
+.cabecalho[data-rolado="true"]::after { opacity: 0.25; }
+.cabecalho :focus-visible { outline-color: var(--cabecalho-texto); }
+
+.botao-cabecalho {
+  transition: background-color var(--dur-hover-fast) var(--ease-out-soft), transform var(--dur-press) var(--ease-out-soft);
+}
+.botao-cabecalho:hover { background-color: color-mix(in oklab, var(--cabecalho-texto) 14%, transparent); }
+.botao-cabecalho:active { transform: scale(var(--press-scale)); }
+
+.botao-carrinho {
+  background: var(--carrinho-fundo);
+  color: var(--carrinho-texto);
+  transition: background-color var(--dur-hover-fast) var(--ease-out-soft), transform var(--dur-press) var(--ease-out-soft);
+}
+.botao-carrinho:hover { background: var(--carrinho-fundo-hover); }
+.botao-carrinho:active { transform: scale(var(--press-scale)); }
+
+/* Contador do carrinho: o número novo entra de baixo (12 px + blur 2 px, 250 ms) */
+.contador { display: inline-block; min-width: 1ch; font-variant-numeric: tabular-nums; }
+.contador[data-muda="true"] { animation: contador-entra var(--dur-open) var(--ease-out-soft); }
+@keyframes contador-entra {
+  from { opacity: 0; transform: translateY(var(--distance-enter)); filter: blur(var(--blur-enter)); }
+}
+
+/* Selo do título (laranja do original) */
+.selo-titulo {
+  background: var(--laranja);
+  color: var(--tinta-laranja);
+  border: 3px solid var(--foreground);
+}
+
+/* Botão de compra (verde) */
+.botao-compra { background: var(--compra); color: var(--compra-texto); }
+.botao-compra:hover:not(:disabled) { background: var(--compra-hover); }
+.botao-compra:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Cartão de pizza: bolha com a foto, botão "+" verde sobreposto, hover só em transform/cor */
+.pizza-bolha {
+  background: var(--bolha);
+  box-shadow: 0 10px 50px var(--sombra-pizza);
+  transition: transform var(--dur-hover) var(--ease-out-soft);
+}
+.pizza-mais {
+  background: var(--compra);
+  color: var(--compra-texto);
+  transition: background-color var(--dur-hover-fast) var(--ease-out-soft), transform var(--dur-hover) var(--ease-out-soft);
+}
+.pizza-card:hover .pizza-mais, .pizza-card:focus-within .pizza-mais { background: var(--compra-hover); }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .pizza-card:hover .pizza-bolha { transform: translateY(var(--lift)); }
+  .pizza-card:hover .pizza-mais { transform: rotate(90deg); }
+}
+/* O botão do nome cobre o cartão inteiro (clique em qualquer parte abre o detalhe) */
+.pizza-abrir::after { content: ""; position: absolute; inset: 0; z-index: 1; }
+.pizza-abrir:focus-visible { outline: none; }
+.pizza-card:has(.pizza-abrir:focus-visible) { outline: 2px solid var(--ring); outline-offset: 4px; border-radius: 1.25rem; }
+
+/* Tamanho: seletor segmentado com inputs de rádio nativos */
+.tamanho-opcao {
+  transition: background-color var(--dur-hover-fast) var(--ease-out-soft), color var(--dur-hover-fast) var(--ease-out-soft), border-color var(--dur-hover-fast) var(--ease-out-soft);
+}
+.tamanho-opcao:hover { background: var(--accent); }
+.tamanho-opcao:has(input:checked) { background: var(--primary); color: var(--primary-foreground); border-color: var(--primary); }
+.tamanho-opcao:has(input:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+/* Controle de quantidade e botões pequenos */
+.passo {
+  transition: background-color var(--dur-hover-fast) var(--ease-out-soft), transform var(--dur-press) var(--ease-out-soft);
+}
+.passo:hover:not(:disabled) { background: var(--accent); }
+.passo:active:not(:disabled) { transform: scale(var(--press-scale)); }
+.passo:disabled { opacity: 0.4; cursor: not-allowed; }
+.passo-num[data-muda="true"] { animation: contador-entra var(--dur-open) var(--ease-out-soft); }
+
+/* Itens do carrinho: entram de baixo (12 px, blur 2 px, 40 ms de escalonamento) e saem esmaecendo */
+[data-slot="sheet-content"][data-state="open"] .carrinho-item,
+.carrinho-item[data-novo="true"] {
+  animation: item-entra var(--dur-enter) var(--ease-out-soft) both;
+  animation-delay: calc(80ms + var(--i, 0) * var(--dur-stagger));
+}
+.carrinho-item[data-saindo="true"] { animation: item-sai var(--dur-close) var(--ease-out-soft) forwards; animation-delay: 0ms; }
+@keyframes item-entra {
+  from { opacity: 0; transform: translateY(var(--distance-enter)); filter: blur(var(--blur-enter)); }
+}
+@keyframes item-sai { to { opacity: 0; transform: translateX(var(--distance-enter)); } }
+
+.total-valor[data-muda="true"] { animation: contador-entra var(--dur-open) var(--ease-out-soft); }
+
+/* Tema: ícones sol/lua empilhados (sai 150 ms, entra 250 ms) */
+.tema-botao { position: relative; }
+.tema-icone {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.6);
+  transition: opacity var(--dur-close) var(--ease-out-soft), transform var(--dur-close) var(--ease-out-soft);
+}
+.tema-icone-lua { opacity: 1; transform: none; transition-duration: var(--dur-open); }
+[data-theme="dark"] .tema-icone-lua { opacity: 0; transform: rotate(-90deg) scale(0.6); transition-duration: var(--dur-close); }
+[data-theme="dark"] .tema-icone-sol { opacity: 1; transform: none; transition-duration: var(--dur-open); }
+
+.tema-trocando,
+.tema-trocando *:not(.tema-icone):not([data-reveal]),
+.tema-trocando *::before,
+.tema-trocando *::after {
+  transition:
+    background-color var(--dur-layout) var(--ease-out-soft),
+    color var(--dur-layout) var(--ease-out-soft),
+    border-color var(--dur-layout) var(--ease-out-soft),
+    fill var(--dur-layout) var(--ease-out-soft) !important;
+}
+
+/* Links de texto */
+.link-texto {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  text-decoration-color: color-mix(in oklab, currentColor 45%, transparent);
+  transition: text-decoration-color var(--dur-hover-fast) var(--ease-out-soft);
+}
+.link-texto:hover { text-decoration-color: currentColor; }
+
+@media print {
+  .js [data-reveal] { opacity: 1 !important; transform: none !important; filter: none !important; }
+}
+
+/* Movimento reduzido: some deslocamento, escala, blur e escalonamento; ficam esmaecimentos curtos e cor */
+@media (prefers-reduced-motion: reduce) {
+  .press:active, .botao-cabecalho:active, .botao-carrinho:active, .passo:active:not(:disabled) { transform: none; }
+  .js [data-reveal] {
+    transform: none;
+    filter: none;
+    transition: opacity var(--dur-enter) var(--ease-out-soft);
+    transition-delay: 0ms;
+  }
+  [data-slot="dialog-content"][data-state="open"],
+  [data-slot="sheet-content"][data-state="open"] { animation: fade-in-soft var(--dur-open) var(--ease-out-soft); }
+  [data-slot="dialog-content"][data-state="closed"],
+  [data-slot="sheet-content"][data-state="closed"] { animation: fade-out-soft var(--dur-close) var(--ease-out-soft) forwards; }
+  [data-slot="sheet-content"][data-state="open"] .carrinho-item,
+  .carrinho-item[data-novo="true"] { animation: fade-in-soft var(--dur-open) var(--ease-out-soft) both; animation-delay: 0ms; }
+  .carrinho-item[data-saindo="true"] { animation: fade-out-soft var(--dur-close) var(--ease-out-soft) forwards; }
+  .contador[data-muda="true"], .passo-num[data-muda="true"], .total-valor[data-muda="true"] { animation: fade-in-soft var(--dur-open) var(--ease-out-soft); }
+  .tema-icone, .tema-icone-lua, [data-theme="dark"] .tema-icone-lua, [data-theme="dark"] .tema-icone-sol { transform: none; transition-duration: var(--dur-close); }
+  .pizza-card:hover .pizza-bolha, .pizza-card:hover .pizza-mais { transform: none; }
+}

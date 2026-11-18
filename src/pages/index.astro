@@ -1,0 +1,122 @@
+---
+import { Picture, getImage } from 'astro:assets';
+import Base from '@/layouts/Base.astro';
+import TemaAlternar from '@/components/TemaAlternar.astro';
+import CarrinhoSheet from '@/components/CarrinhoSheet';
+import PizzaDetalhe from '@/components/PizzaDetalhe';
+import { DESCONTO, brl, pizzas } from '@/data/catalogo';
+import { imagens } from '@/data/imagens';
+
+// Miniaturas do carrinho (56 px, dobradas para telas de alta densidade) pelo mesmo pipeline de imagens.
+const miniaturas: Record<number, string> = {};
+for (const p of pizzas) {
+  const mini = await getImage({ src: imagens[p.slug], width: 112, format: 'webp', quality: 80 });
+  miniaturas[p.id] = mini.src;
+}
+
+const apartirDe = (precos: readonly number[]) => brl(Math.min(...precos));
+---
+
+<Base
+  title="Projeto Pizzaria: cardápio de pizzas"
+  description="Escolha o sabor e o tamanho da pizza, monte o carrinho e veja o total com desconto. Projeto de estudo, nada é cobrado."
+  ogImage="/og-image.png"
+>
+  <header slot="topo" class="cabecalho sticky top-0 z-40" data-cabecalho>
+    <div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4">
+      <a href="/" class="press -mx-2 inline-flex min-h-11 items-center rounded-lg px-2 text-base font-bold tracking-tight whitespace-nowrap sm:text-lg">
+        Projeto Pizzaria
+      </a>
+      <div class="flex items-center gap-2">
+        <TemaAlternar />
+        <CarrinhoSheet client:load miniaturas={miniaturas} />
+      </div>
+    </div>
+  </header>
+
+  <div class="mx-auto max-w-6xl px-4 pt-10 pb-16 sm:pt-14">
+    <h1
+      class="selo-titulo mx-auto mb-3 w-fit rounded-full px-10 py-2 text-center text-4xl font-bold tracking-tight sm:px-14 sm:text-5xl"
+    >
+      Pizzas
+    </h1>
+    <p class="mx-auto mb-12 max-w-md text-center text-muted-foreground">
+      Escolha o sabor, o tamanho e a quantidade. O carrinho aplica {Math.round(DESCONTO * 100)}% de desconto no total.
+    </p>
+
+    <noscript>
+      <p class="mx-auto mb-10 max-w-md rounded-lg border border-border bg-card p-4 text-center text-sm">
+        Para montar o carrinho é preciso ativar o JavaScript. O cardápio abaixo continua visível.
+      </p>
+    </noscript>
+
+    <ul class="grid grid-cols-1 gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        pizzas.map((p, i) => (
+          <li class="flex justify-center" data-reveal style={`--i: ${i % 3}`}>
+            <article class="pizza-card relative flex w-full max-w-64 flex-col items-center text-center">
+              <div class="pizza-bolha size-52 overflow-hidden rounded-full">
+                <Picture
+                  src={imagens[p.slug]}
+                  alt={`Pizza ${p.nome} vista de cima`}
+                  widths={[208, 416]}
+                  sizes="208px"
+                  formats={['avif', 'webp']}
+                  fallbackFormat="webp"
+                  quality={80}
+                  loading={i < 3 ? 'eager' : 'lazy'}
+                  pictureAttributes={{ class: 'block size-full' }}
+                  class="size-full object-cover"
+                />
+              </div>
+              <div
+                class="pizza-mais -mt-6 flex size-12 items-center justify-center rounded-full text-2xl leading-none"
+                aria-hidden="true"
+              >
+                +
+              </div>
+              <p class="mt-2 text-sm text-muted-foreground">
+                a partir de <span class="font-medium text-foreground tabular-nums">{apartirDe(p.precos)}</span>
+              </p>
+              <h2 class="mt-1 text-xl font-bold">
+                <button type="button" class="pizza-abrir cursor-pointer" data-abrir-pizza={p.slug} aria-haspopup="dialog">
+                  {p.nome}
+                </button>
+              </h2>
+              <p class="mt-2 text-sm text-muted-foreground">{p.descricao}</p>
+            </article>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <PizzaDetalhe client:load>
+    {
+      pizzas.map((p) => (
+        <Picture
+          slot={`p${p.id}`}
+          src={imagens[p.slug]}
+          alt={`Pizza ${p.nome} vista de cima`}
+          widths={[288, 576]}
+          sizes="(min-width: 640px) 288px, 224px"
+          formats={['avif', 'webp']}
+          fallbackFormat="webp"
+          quality={82}
+          pictureAttributes={{ class: 'block size-full' }}
+          class="size-full object-cover"
+        />
+      ))
+    }
+  </PizzaDetalhe>
+
+  <footer slot="rodape" class="border-t border-border bg-card">
+    <div class="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-8 text-sm text-muted-foreground">
+      <p>Site de demonstração de estudo, sem atendimento real. Nada é cobrado nem enviado.</p>
+      <p>
+        Projeto de estudo de Paulo H. M. Rabelo ·
+        <a href="https://phmr.libertycondominio.online" rel="noopener" class="link-texto text-foreground">PHMR Tech Solutions</a>
+      </p>
+    </div>
+  </footer>
+</Base>
