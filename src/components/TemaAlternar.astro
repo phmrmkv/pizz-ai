@@ -31,7 +31,7 @@ const { rotuloEscuro = 'Mudar para o tema escuro', rotuloClaro = 'Mudar para o t
   if (botao) {
     const sincronizar = () => {
       const escuro = raiz.dataset.theme === 'dark';
-      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', escuro ? '#1c1209' : '#fff6e6');
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', escuro ? '#1c1209' : '#fbfaf8');
       botao.setAttribute('aria-label', (escuro ? botao.dataset.rotuloClaro : botao.dataset.rotuloEscuro) ?? '');
     };
     sincronizar();

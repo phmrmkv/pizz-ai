@@ -41,8 +41,8 @@ const og = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" vi
   <text x="70" y="270" font-family="Segoe UI, Arial, sans-serif" font-weight="800" font-size="150" letter-spacing="-6" fill="#fff3dc">Pizz</text>
   <g transform="translate(335 165) scale(4.7)">${ponto}</g>
   <text x="452" y="270" font-family="Segoe UI, Arial, sans-serif" font-weight="800" font-size="150" letter-spacing="-6" fill="#fff3dc">ai</text>
-  <text x="74" y="360" font-family="Segoe UI, Arial, sans-serif" font-weight="600" font-size="42" fill="#e6cba0">Conte quem vai comer.</text>
-  <text x="74" y="414" font-family="Segoe UI, Arial, sans-serif" font-weight="600" font-size="42" fill="#e6cba0">A IA monta o pedido.</text>
+  <text x="74" y="360" font-family="Segoe UI, Arial, sans-serif" font-weight="600" font-size="42" fill="#e6cba0">Pizza para todo mundo,</text>
+  <text x="74" y="414" font-family="Segoe UI, Arial, sans-serif" font-weight="600" font-size="42" fill="#e6cba0">pedida numa conversa só.</text>
   <rect x="74" y="500" width="400" height="52" rx="26" fill="#f0b24d"/>
   <text x="274" y="535" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-weight="700" font-size="26" fill="#2b1b10">Projeto em desenvolvimento</text>
 </svg>`;

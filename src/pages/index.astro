@@ -6,7 +6,7 @@ const passos = [
   { t: 'Você conta como vai ser', d: 'Quantas pessoas são, quem não come carne, o que não pode levar e quanto quer gastar. Escreva do jeito que falaria.' },
   { t: 'A Pizz.ai sugere', d: 'Ela propõe tamanho e sabores para o grupo e explica por que escolheu cada um.' },
   { t: 'Você ajusta na conversa', d: 'Mudou de ideia? Diga “tira a calabresa” ou “quero mais barato” e o resumo do pedido muda na hora.' },
-  { t: 'O pedido segue para a pizzaria', d: 'Com o resumo conferido por você, a Pizz.ai envia o pedido para a pizzaria parceira e avisa quando ela responder.' },
+  { t: 'O pedido vai para a pizzaria', d: 'Com o resumo conferido por você, a Pizz.ai vai enviar o pedido para a pizzaria que você escolher e avisar quando ela responder.' },
 ];
 
 const recursos = [
@@ -15,28 +15,28 @@ const recursos = [
   { t: 'Respeita restrições', d: 'Sem carne, sem cebola, sem lactose: o que você disser vira regra na sugestão.' },
   { t: 'Segura o orçamento', d: 'Você diz o limite e a sugestão tenta caber nele, trocando sabor ou tamanho se precisar.' },
   { t: 'Lembra do que vocês gostam', d: 'Preferências guardadas só se você quiser, para o próximo pedido começar adiantado.' },
-  { t: 'Envia o pedido', d: 'Com o resumo fechado, ele segue para a pizzaria parceira sem você copiar nada.' },
+  { t: 'Envia o pedido', d: 'Com o resumo fechado, vai enviar o pedido para a pizzaria que você escolher, sem você copiar nada.' },
 ];
 
 const duvidas = [
   { p: 'Já dá para pedir pela Pizz.ai?', r: 'Não. O produto está em desenvolvimento e ainda não abre para uso. Esta página é uma demonstração do que ele vai fazer.' },
-  { p: 'A IA envia o pedido sozinha?', r: 'O desenho é que não: o pedido só segue para a pizzaria depois que você confere o resumo e confirma.' },
-  { p: 'Quais pizzarias vão aceitar pedidos?', r: 'Ainda não há pizzarias parceiras. A ideia é que cada pedido vá para uma pizzaria parceira, mas isso ainda está sendo definido.' },
+  { p: 'A IA envia o pedido sozinha?', r: 'Não. O pedido só segue para a pizzaria depois que você conferir o resumo e confirmar.' },
+  { p: 'Quais pizzarias vão aceitar pedidos?', r: 'Ainda não há pizzarias parceiras. A ideia é que o pedido vá para a pizzaria que você escolher, mas como isso vai funcionar ainda está sendo definido.' },
   { p: 'E se eu tiver alergia?', r: 'A Pizz.ai usa o que você informa para sugerir sabores, mas não substitui a conferência dos ingredientes com a pizzaria. Em caso de alergia, confirme sempre com ela.' },
   { p: 'Esta página guarda meus dados?', r: 'Não. Os botões desta demonstração só abrem avisos e nada do que você digitar é enviado ou guardado.' },
 ];
 ---
 
 <Base
-  title="Pizz.ai | Conte quem vai comer e a IA monta o pedido de pizza"
-  description="Projeto em desenvolvimento: a Pizz.ai conversa com você, sugere sabores e tamanhos, divide meio a meio e envia o pedido para a pizzaria parceira. Esta página é uma demonstração."
+  title="Pizz.ai | Pizza para todo mundo, pedida numa conversa só"
+  description="Projeto em desenvolvimento: a Pizz.ai conversa com você, sugere sabores e tamanhos, divide meio a meio e vai enviar o pedido para a pizzaria que você escolher. Esta página é uma demonstração."
 >
   <section class="hero" id="inicio" style="scroll-margin-top: 0">
     <div class="contido hero-grade">
       <div>
-        <h1>Conte quem vai comer. A Pizz.ai monta o pedido.</h1>
+        <h1>Pizza para todo mundo, pedida numa conversa só.</h1>
         <p class="hero-texto">
-          Você diz quantas pessoas são, o que não pode entrar e quanto quer gastar. A IA sugere sabores e tamanhos, divide meio a meio e envia o pedido para a pizzaria parceira.
+          Você conta quantas pessoas são, o que não pode entrar e quanto quer gastar. A Pizz.ai vai sugerir sabores e tamanhos, dividir meio a meio e enviar o pedido para a pizzaria que você escolher.
         </p>
         <div class="hero-acoes">
           <button type="button" class="botao botao-primario" data-abrir="dlg-aviso">Quero testar</button>
@@ -97,7 +97,7 @@ const duvidas = [
 
         <div class="demo-acoes">
           <span>Os dados acima são inventados para a demonstração.</span>
-          <button type="button" class="botao botao-contorno botao-pequeno" data-demo-repetir hidden>Ver de novo</button>
+          <button type="button" class="botao botao-contorno botao-pequeno" data-demo-controle hidden>Pausar</button>
         </div>
       </div>
     </div>
@@ -165,8 +165,8 @@ const duvidas = [
       <Pizza id="final" esq="calabresa" dir="marguerita" />
     </div>
     <div class="contido">
-      <h2 id="t-final">Quer saber quando abrir?</h2>
-      <p>Ainda não há data. Entre na lista de espera e a ideia é avisar quando a Pizz.ai estiver pronta. Nesta demonstração, nada é enviado.</p>
+      <h2 id="t-final">A Pizz.ai ainda está no forno.</h2>
+      <p>Não há data para abrir. A lista de espera abaixo é só uma demonstração: o e-mail digitado não é enviado nem guardado.</p>
       <button type="button" class="botao botao-claro" data-abrir="dlg-lista">Entrar na lista de espera</button>
     </div>
   </section>

@@ -31,8 +31,9 @@ function rolarAte(y: number, aoTerminar?: () => void) {
     aoTerminar?.();
     return;
   }
-  // 450 a 900 ms conforme a distância; com movimento reduzido, rolagem curta (300 ms).
-  const duracao = reduzido() ? 300 : Math.min(900, Math.max(450, Math.abs(distancia) * 0.25));
+  // Mínimo e máximo vêm dos tokens --dur-scroll-min/max; com movimento reduzido, rolagem curta (300 ms).
+  const tok = (n: string, padrao: number) => parseFloat(getComputedStyle(document.documentElement).getPropertyValue(n)) || padrao;
+  const duracao = reduzido() ? 300 : Math.min(tok('--dur-scroll-max', 900), Math.max(tok('--dur-scroll-min', 450), Math.abs(distancia) * 0.25));
   const t0 = performance.now();
   const passo = (agora: number) => {
     const p = Math.min(1, (agora - t0) / duracao);
@@ -146,46 +147,69 @@ formLista?.addEventListener('submit', (e) => {
   ok?.querySelector<HTMLElement>('[data-fechar]')?.focus();
 });
 
-// Demonstração: a conversa se monta uma vez quando aparece na tela.
+// Demonstração: a conversa se monta uma vez quando aparece na tela e pode ser pausada.
 const demo = document.querySelector<HTMLElement>('[data-demo]');
 if (demo) {
-  const repetir = demo.querySelector<HTMLButtonElement>('[data-demo-repetir]');
+  const controle = demo.querySelector<HTMLButtonElement>('[data-demo-controle]');
   const alvos = [...demo.querySelectorAll<HTMLElement>('[data-passo]')];
-  const atrasos = [0, 1200, 2500, 3900, 5400, 6500];
-  let timers: number[] = [];
+  const intervalos = [400, 1200, 1300, 1400, 1500, 1100]; // espera antes de cada mensagem (ms)
+  let proximo = 0;
+  let timer = 0;
+  let estado: 'rodando' | 'pausada' | 'concluida' = 'rodando';
 
   const mostrar = (etapa: number) => alvos.forEach((el) => el.classList.toggle('visto', Number(el.dataset.passo) <= etapa));
-  const rodar = () => {
-    timers.forEach(clearTimeout);
+  const rotulo = () => {
+    if (!controle) return;
+    controle.textContent = estado === 'rodando' ? 'Pausar' : estado === 'pausada' ? 'Continuar' : 'Ver de novo';
+  };
+  const agendar = () => {
+    if (proximo >= intervalos.length) {
+      estado = 'concluida';
+      demo.classList.add('concluida');
+      rotulo();
+      return;
+    }
+    timer = window.setTimeout(() => {
+      mostrar(proximo + 1);
+      proximo += 1;
+      agendar();
+    }, intervalos[proximo]);
+  };
+  const iniciar = () => {
+    clearTimeout(timer);
+    proximo = 0;
+    estado = 'rodando';
     demo.classList.remove('concluida');
     demo.classList.add('rodando');
     mostrar(0);
-    if (repetir) repetir.hidden = true;
-    atrasos.forEach((ms, i) => {
-      timers.push(
-        window.setTimeout(() => {
-          mostrar(i + 1);
-          if (i === atrasos.length - 1) {
-            demo.classList.add('concluida');
-            if (repetir) repetir.hidden = false;
-          }
-        }, 400 + ms),
-      );
-    });
+    if (controle) controle.hidden = false;
+    rotulo();
+    agendar();
   };
 
   if (!reduzido() && 'IntersectionObserver' in window) {
-    // Começa escondida só enquanto espera aparecer; sem o observer, tudo fica visível.
     const io = new IntersectionObserver(
       (entradas) => {
         if (entradas.some((e) => e.isIntersecting)) {
           io.disconnect();
-          rodar();
+          iniciar();
         }
       },
       { threshold: 0.35 },
     );
     io.observe(demo);
-    repetir?.addEventListener('click', rodar);
+    controle?.addEventListener('click', () => {
+      if (estado === 'rodando') {
+        clearTimeout(timer);
+        estado = 'pausada';
+        rotulo();
+      } else if (estado === 'pausada') {
+        estado = 'rodando';
+        rotulo();
+        agendar();
+      } else {
+        iniciar();
+      }
+    });
   }
 }

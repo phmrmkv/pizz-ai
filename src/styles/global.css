@@ -10,12 +10,12 @@
 :root {
   color-scheme: light;
 
-  --fundo: #fff6e6;
-  --fundo-2: #f5e0b8;          /* faixas alternadas */
-  --superficie: #fffdf8;
+  --fundo: #fbfaf8;
+  --fundo-2: #f1e9dd;          /* faixas alternadas */
+  --superficie: #ffffff;
   --tinta: #2b1b10;
   --tinta-2: #69492f;          /* texto secundário */
-  --linha: #e4cda3;
+  --linha: #e3d9c9;
   --controle: #8a6a44;         /* borda de campo (>= 3:1) */
 
   --tomate: #c0301b;           /* botão principal (texto branco) */
@@ -73,7 +73,7 @@
   --pz-molho: #cf3f27;
   --pz-queijo: #f6cf6b;
 
-  --fonte-titulo: "Bricolage Grotesque Variable", "Bricolage Grotesque", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", system-ui, sans-serif;
+  --fonte-titulo: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI Variable Display", "Segoe UI", system-ui, Roboto, sans-serif;
   --fonte-texto: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter Variable", "Inter", system-ui, "Segoe UI", Roboto, sans-serif;
 
   /* Movimento (docs/transicoes.md) */
@@ -89,6 +89,11 @@
   --press-scale: 0.97;
   --dur-layout: 250ms;
   --dur-header: 250ms;
+  --dur-logo: 350ms;
+  --dur-topo-pizza: 450ms;
+  --dur-entrada-pizza: 900ms;
+  --dur-scroll-min: 450;   /* ms, lido por interacoes.ts */
+  --dur-scroll-max: 900;
   --dur-open: 250ms;
   --dur-close: 150ms;
   --modal-scale: 0.96;
@@ -141,8 +146,8 @@
 
 .logo { display: inline-flex; align-items: baseline; font-family: var(--fonte-titulo); font-weight: 800; letter-spacing: -0.04em; line-height: 1; color: var(--tinta); text-decoration: none; font-size: 1.65rem; }
 .logo-ponto { width: 0.62em; height: 0.62em; margin-inline: 0.04em 0.02em; align-self: center; transform: translateY(0.06em); overflow: visible; }
-.logo-ponto .fatia { transition: transform 350ms var(--ease-out-soft); transform-box: fill-box; }
-a.logo:hover .fatia { transform: translate(1.5px, -1.5px); }
+.logo-ponto .fatia { transition: transform var(--dur-logo) var(--ease-out-soft); transform-box: fill-box; }
+a:hover > .logo .fatia { transform: translate(1.5px, -1.5px); }
 
 .nav { display: none; margin-left: auto; gap: 4px; }
 .nav a { padding: 10px 14px; border-radius: 999px; color: var(--tinta-2); text-decoration: none; font-weight: 500; font-size: 0.97rem; transition: color var(--dur-hover-fast) var(--ease-out-soft), background-color var(--dur-hover-fast) var(--ease-out-soft); }
@@ -182,6 +187,7 @@ a.logo:hover .fatia { transform: translate(1.5px, -1.5px); }
   font: inherit; font-weight: 650; font-size: 1.02rem; line-height: 1.2; text-decoration: none; cursor: pointer;
   transition: background-color var(--dur-hover-fast) var(--ease-out-soft), color var(--dur-hover-fast) var(--ease-out-soft), border-color var(--dur-hover-fast) var(--ease-out-soft), transform var(--dur-press) var(--ease-out-soft);
 }
+.botao[hidden] { display: none; }
 .botao:active { transform: scale(var(--press-scale)); }
 .botao-primario { background: var(--tomate); color: var(--sobre-tomate); }
 .botao-primario:hover { background: var(--tomate-hover); }
@@ -192,16 +198,16 @@ a.logo:hover .fatia { transform: translate(1.5px, -1.5px); }
 .botao-pequeno { min-height: 44px; padding: 8px 18px; font-size: 0.95rem; }
 
 /* ------- Hero ------- */
-.hero { padding-block: 40px 72px; }
+.hero { padding-block: 40px 72px; overflow-x: clip; }
 .hero-grade { display: grid; gap: 40px; align-items: center; }
 @media (min-width: 960px) { .hero { padding-block: 72px 104px; } .hero-grade { grid-template-columns: 1.08fr 0.92fr; gap: 56px; } }
-.hero h1 { font-size: clamp(2.75rem, 1.3rem + 6.2vw, 5.6rem); font-weight: 800; line-height: 0.98; letter-spacing: -0.045em; }
+.hero h1 { font-size: clamp(2.6rem, 1.3rem + 5.6vw, 5.2rem); font-weight: 850; line-height: 1; letter-spacing: -0.05em; }
 .hero-texto { margin-top: 24px; max-width: 34rem; font-size: clamp(1.08rem, 1rem + 0.4vw, 1.25rem); color: var(--tinta-2); }
 .hero-acoes { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
 .hero-nota { margin-top: 20px; font-size: 0.92rem; color: var(--tinta-2); max-width: 32rem; }
 
 .hero-pizza { position: relative; width: min(100%, 520px); margin-inline: auto; aspect-ratio: 1; }
-.hero-pizza::before { content: ""; position: absolute; inset: -9%; border-radius: 50%; background: var(--disco); }
+.hero-pizza::before { content: ""; position: absolute; inset: -6%; border-radius: 50%; background: var(--disco); }
 .hero-pizza > svg { position: relative; width: 100%; height: 100%; display: block; filter: drop-shadow(0 28px 28px rgb(43 27 16 / 0.3)); }
 .nota-pizza {
   position: absolute; padding: 6px 14px; border-radius: 999px; font-weight: 650; font-size: 0.95rem; line-height: 1.2;
@@ -216,10 +222,10 @@ a.logo:hover .fatia { transform: translate(1.5px, -1.5px); }
 
 /* Pizza (SVG) */
 .pz-meia { transform-box: view-box; transform-origin: 100px 100px; }
-.pz-topo { transition: opacity 450ms var(--ease-out-soft), transform 450ms var(--ease-out-soft); transform-box: view-box; transform-origin: 100px 100px; }
+.pz-topo { transition: opacity var(--dur-topo-pizza) var(--ease-out-soft), transform var(--dur-topo-pizza) var(--ease-out-soft); transform-box: view-box; transform-origin: 100px 100px; }
 @media (prefers-reduced-motion: no-preference) {
-  .js .hero-pizza .pz-esq { animation: pz-esq 900ms var(--ease-out-soft) 120ms both; }
-  .js .hero-pizza .pz-dir { animation: pz-dir 900ms var(--ease-out-soft) 220ms both; }
+  .js .hero-pizza .pz-esq { animation: pz-esq var(--dur-entrada-pizza) var(--ease-out-soft) calc(3 * var(--dur-stagger)) both; }
+  .js .hero-pizza .pz-dir { animation: pz-dir var(--dur-entrada-pizza) var(--ease-out-soft) calc(6 * var(--dur-stagger)) both; }
 }
 @keyframes pz-esq { from { opacity: 0; transform: translateX(-18px) rotate(-6deg); } }
 @keyframes pz-dir { from { opacity: 0; transform: translateX(18px) rotate(6deg); } }
@@ -370,6 +376,6 @@ html:has(dialog[open]) { overflow: hidden; }
   .faq details[open] .resposta { animation: fade-in-soft var(--dur-open) var(--ease-out-soft); }
   .demo.rodando [data-passo]:not(.visto) { transform: none; filter: none; }
   .demo.rodando .pz-topo:not(.visto) { transform: none; }
-  a.logo:hover .fatia { transform: none; }
+  a:hover > .logo .fatia { transform: none; }
 }
 @keyframes fade-in-soft { from { opacity: 0; } }
