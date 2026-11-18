@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://pizzai.libertycondominio.online/sitemap-index.xml
+Sitemap: https://pizzai.phmr.com.br/sitemap-index.xml

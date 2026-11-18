@@ -5,7 +5,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://pizzai.libertycondominio.online',
+  site: 'https://pizzai.phmr.com.br',
   output: 'static',
   integrations: [sitemap()],
   vite: {

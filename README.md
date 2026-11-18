@@ -12,7 +12,7 @@ Feito com Astro (saída estática), Tailwind CSS 4 e TypeScript. Sem React: os d
 - `npm run dev`, `npm run check`, `npm run build`, `npm run preview`
 - `node scripts/gerar-marca.mjs` refaz `favicon.svg`, `apple-touch-icon.png` e `og-image.png` (sharp)
 
-Site publicado em: https://pizzai.libertycondominio.online (hospedagem estática com `public/.htaccess`).
+Site publicado em: https://pizzai.phmr.com.br (hospedagem estática com `public/.htaccess`).
 
 Origem: começou como estudo de curso (Projeto Pizzaria). A versão original em HTML + CSS + JavaScript está em `referencias/original/`, fora do build.
 
