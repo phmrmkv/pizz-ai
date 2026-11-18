@@ -1,0 +1,86 @@
+---
+// Pizza desenhada em SVG (sem imagem): base + duas metades com coberturas.
+// Os dados são só ilustração; nada aqui é cardápio real.
+type Sabor = 'calabresa' | 'marguerita' | null;
+interface Props {
+  esq?: Sabor;
+  dir?: Sabor;
+  id: string;
+  rotulo?: string;
+  class?: string;
+  /** true: as metades recebem a classe "pz-topo" (aparecem em etapas na demonstração) */
+  etapas?: boolean;
+}
+const { esq = null, dir = null, id, rotulo, class: classe = '', etapas = false } = Astro.props;
+
+const L: [number, number][] = [[60, 58], [46, 98], [62, 142], [85, 82], [80, 120], [76, 46], [80, 156], [36, 76], [38, 124]];
+const R: [number, number][] = L.map(([x, y], i) => [200 - x + (i % 2 ? 5 : -4), y + ((i % 3) - 1) * 6]);
+
+const folhas = [-30, 25, -50, 40, 10];
+function cobertura(sabor: Sabor, pontos: [number, number][]) {
+  if (!sabor) return [];
+  return pontos.map(([x, y], i) => ({ sabor, x, y, i, giro: folhas[i % folhas.length] }));
+}
+const metades = [
+  { cls: 'pz-esq', clip: `${id}-e`, itens: cobertura(esq, L) },
+  { cls: 'pz-dir', clip: `${id}-d`, itens: cobertura(dir, R) },
+];
+const fatias = Array.from({ length: 8 }, (_, k) => {
+  const a = (k * Math.PI) / 4 + Math.PI / 8;
+  return [100 + 84 * Math.cos(a), 100 + 84 * Math.sin(a)];
+});
+---
+
+<svg
+  class={classe}
+  viewBox="0 0 200 200"
+  role={rotulo ? 'img' : undefined}
+  aria-label={rotulo}
+  aria-hidden={rotulo ? undefined : 'true'}
+  focusable="false"
+>
+  <defs>
+    <clipPath id={`${id}-e`}><rect x="0" y="0" width="100" height="200"></rect></clipPath>
+    <clipPath id={`${id}-d`}><rect x="100" y="0" width="100" height="200"></rect></clipPath>
+  </defs>
+  <circle cx="100" cy="100" r="96" fill="var(--pz-massa)"></circle>
+  <circle cx="100" cy="100" r="96" fill="none" stroke="#b9741f" stroke-width="1.5" opacity="0.5"></circle>
+  <circle cx="100" cy="100" r="85" fill="var(--pz-molho)"></circle>
+  <circle cx="100" cy="100" r="80" fill="var(--pz-queijo)"></circle>
+  <circle cx="100" cy="100" r="80" fill="none" stroke="#e5b24f" stroke-width="1" opacity="0.6"></circle>
+  {metades.map((m) => (
+    <g class={`pz-meia ${m.cls}${etapas ? ' pz-topo' : ''}`} data-passo={etapas ? '4' : undefined} clip-path={`url(#${m.clip})`}>
+      {m.itens.map((c) =>
+        c.sabor === 'calabresa' ? (
+          <g>
+            <circle cx={c.x} cy={c.y} r="11.5" fill="#a62819"></circle>
+            <circle cx={c.x} cy={c.y} r="8" fill="#c8402c"></circle>
+            <circle cx={c.x - 2.5} cy={c.y - 2} r="1.1" fill="#8d2013"></circle>
+            <circle cx={c.x + 2.8} cy={c.y + 1.5} r="1.1" fill="#8d2013"></circle>
+            <circle cx={c.x - 0.5} cy={c.y + 3.5} r="1" fill="#8d2013"></circle>
+          </g>
+        ) : c.i % 3 === 0 ? (
+          <g>
+            <circle cx={c.x} cy={c.y} r="10.5" fill="#e0452e"></circle>
+            <circle cx={c.x} cy={c.y} r="6.5" fill="#f26a4f"></circle>
+            <circle cx={c.x} cy={c.y} r="2" fill="#f9b5a2"></circle>
+          </g>
+        ) : c.i % 3 === 1 ? (
+          <g>
+            <circle cx={c.x} cy={c.y} r="9" fill="#fff6df"></circle>
+            <circle cx={c.x} cy={c.y} r="9" fill="none" stroke="#e8d7ae" stroke-width="1"></circle>
+          </g>
+        ) : (
+          <g transform={`rotate(${c.giro} ${c.x} ${c.y})`}>
+            <ellipse cx={c.x} cy={c.y} rx="10" ry="5.2" fill="#3e8e4f"></ellipse>
+            <path d={`M${c.x - 9} ${c.y} H${c.x + 9}`} stroke="#2a6b38" stroke-width="1"></path>
+          </g>
+        ),
+      )}
+    </g>
+  ))}
+  <g stroke="#8a3f10" stroke-width="1" opacity="0.28" stroke-linecap="round">
+    {fatias.map(([x, y]) => <line x1="100" y1="100" x2={x} y2={y}></line>)}
+  </g>
+  <line x1="100" y1="14" x2="100" y2="186" stroke="#6b2a08" stroke-width="2" stroke-dasharray="2 5" stroke-linecap="round" opacity="0.5"></line>
+</svg>

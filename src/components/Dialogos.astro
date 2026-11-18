@@ -1,0 +1,46 @@
+---
+// Diálogos nativos <dialog>. O clique no fundo fecha: o <dialog> não tem padding,
+// quem tem é o .dlg-corpo, então só o fundo de verdade (::backdrop) é o próprio <dialog>.
+---
+
+<dialog class="dlg" id="dlg-aviso" aria-labelledby="dlg-aviso-t">
+  <div class="dlg-corpo">
+    <button type="button" class="icone-botao dlg-fechar" aria-label="Fechar" data-fechar>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+    </button>
+    <h2 id="dlg-aviso-t">Ainda em desenvolvimento</h2>
+    <p>A Pizz.ai ainda não abre para uso. Esta página é uma demonstração do que o produto vai fazer, e nenhum pedido pode ser feito por aqui.</p>
+    <div class="dlg-acoes">
+      <button type="button" class="botao botao-primario" data-fechar>Entendi</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog class="dlg" id="dlg-lista" aria-labelledby="dlg-lista-t">
+  <div class="dlg-corpo">
+    <button type="button" class="icone-botao dlg-fechar" aria-label="Fechar" data-fechar>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+    </button>
+    <div data-lista-form>
+      <h2 id="dlg-lista-t">Lista de espera</h2>
+      <p>Quando a Pizz.ai abrir, a ideia é avisar quem pediu. Por enquanto é só uma demonstração: o e-mail digitado aqui não é enviado nem guardado.</p>
+      <form method="dialog" data-form-lista>
+        <div class="campo">
+          <label for="lista-email">E-mail</label>
+          <input id="lista-email" name="email" type="email" required autocomplete="email" placeholder="voce@exemplo.com" />
+        </div>
+        <div class="dlg-acoes">
+          <button type="submit" class="botao botao-primario">Entrar na lista</button>
+          <button type="button" class="botao botao-contorno" data-fechar>Cancelar</button>
+        </div>
+      </form>
+    </div>
+    <div data-lista-ok hidden>
+      <h2>Só de mentira, por enquanto</h2>
+      <p>Nada foi enviado nem guardado. A lista de espera ainda não existe: esta página só mostra como ela funcionaria.</p>
+      <div class="dlg-acoes">
+        <button type="button" class="botao botao-primario" data-fechar>Fechar</button>
+      </div>
+    </div>
+  </div>
+</dialog>

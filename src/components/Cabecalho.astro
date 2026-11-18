@@ -1,15 +1,42 @@
 ---
-import TemaAlternar from '@/components/TemaAlternar.astro';
+import Logo from './Logo.astro';
+import TemaAlternar from './TemaAlternar.astro';
+
+interface Props {
+  /** Na 404 os links apontam para a página inicial */
+  base?: string;
+}
+const { base = '' } = Astro.props;
+const links = [
+  { href: `${base}#exemplo`, texto: 'Exemplo' },
+  { href: `${base}#como-funciona`, texto: 'Como funciona' },
+  { href: `${base}#o-que-faz`, texto: 'O que faz' },
+  { href: `${base}#duvidas`, texto: 'Dúvidas' },
+];
 ---
 
-<header class="cabecalho sticky top-0 z-40" data-cabecalho>
-  <div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4">
-    <a href="/" class="press -mx-2 inline-flex min-h-11 items-center rounded-lg px-2 text-base font-bold tracking-tight whitespace-nowrap sm:text-lg">
-      Projeto Pizzaria
+<div class="faixa-dev" role="note">
+  <strong>Projeto em desenvolvimento.</strong> Esta página é uma demonstração.
+</div>
+<header class="cabecalho" data-cabecalho>
+  <div class="contido cabecalho-linha">
+    <a href={base || '#inicio'} class="inline-flex min-h-11 items-center">
+      <Logo />
     </a>
-    <div class="flex items-center gap-2">
+    <nav class="nav" aria-label="Seções" data-nav>
+      {links.map((l) => <a href={l.href}>{l.texto}</a>)}
+    </nav>
+    <div class="cabecalho-acoes">
+      <button type="button" class="botao botao-primario botao-pequeno" data-abrir="dlg-aviso">Quero testar</button>
       <TemaAlternar />
-      <slot />
+      <button type="button" class="icone-botao menu-botao" aria-expanded="false" aria-controls="menu-painel" aria-label="Menu" data-menu-botao>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
+      </button>
     </div>
+  </div>
+  <div class="menu-painel" id="menu-painel" hidden data-menu-painel>
+    <nav class="contido" aria-label="Seções (menu do celular)">
+      {links.map((l) => <a href={l.href}>{l.texto}</a>)}
+    </nav>
   </div>
 </header>

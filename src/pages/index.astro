@@ -1,111 +1,173 @@
 ---
-import { Picture, getImage } from 'astro:assets';
 import Base from '@/layouts/Base.astro';
-import Cabecalho from '@/components/Cabecalho.astro';
-import Rodape from '@/components/Rodape.astro';
-import CarrinhoSheet from '@/components/CarrinhoSheet';
-import PizzaDetalhe from '@/components/PizzaDetalhe';
-import { DESCONTO, brl, pizzas } from '@/data/catalogo';
-import { imagens } from '@/data/imagens';
+import Pizza from '@/components/Pizza.astro';
 
-// Miniaturas do carrinho (56 px, dobradas para telas de alta densidade) pelo mesmo pipeline de imagens.
-const miniaturas: Record<number, string> = {};
-for (const p of pizzas) {
-  const mini = await getImage({ src: imagens[p.slug], width: 112, format: 'webp', quality: 80 });
-  miniaturas[p.id] = mini.src;
-}
+const passos = [
+  { t: 'Você conta como vai ser', d: 'Quantas pessoas são, quem não come carne, o que não pode levar e quanto quer gastar. Escreva do jeito que falaria.' },
+  { t: 'A Pizz.ai sugere', d: 'Ela propõe tamanho e sabores para o grupo e explica por que escolheu cada um.' },
+  { t: 'Você ajusta na conversa', d: 'Mudou de ideia? Diga “tira a calabresa” ou “quero mais barato” e o resumo do pedido muda na hora.' },
+  { t: 'O pedido segue para a pizzaria', d: 'Com o resumo conferido por você, a Pizz.ai envia o pedido para a pizzaria parceira e avisa quando ela responder.' },
+];
 
-const apartirDe = (precos: readonly number[]) => brl(Math.min(...precos));
+const recursos = [
+  { t: 'Calcula quanto pedir', d: 'Tamanho e quantidade saem do número de pessoas, sem você fazer conta de fatias.' },
+  { t: 'Divide meio a meio', d: 'Cada metade com um sabor, para ninguém do grupo ficar sem opção.' },
+  { t: 'Respeita restrições', d: 'Sem carne, sem cebola, sem lactose: o que você disser vira regra na sugestão.' },
+  { t: 'Segura o orçamento', d: 'Você diz o limite e a sugestão tenta caber nele, trocando sabor ou tamanho se precisar.' },
+  { t: 'Lembra do que vocês gostam', d: 'Preferências guardadas só se você quiser, para o próximo pedido começar adiantado.' },
+  { t: 'Envia o pedido', d: 'Com o resumo fechado, ele segue para a pizzaria parceira sem você copiar nada.' },
+];
+
+const duvidas = [
+  { p: 'Já dá para pedir pela Pizz.ai?', r: 'Não. O produto está em desenvolvimento e ainda não abre para uso. Esta página é uma demonstração do que ele vai fazer.' },
+  { p: 'A IA envia o pedido sozinha?', r: 'O desenho é que não: o pedido só segue para a pizzaria depois que você confere o resumo e confirma.' },
+  { p: 'Quais pizzarias vão aceitar pedidos?', r: 'Ainda não há pizzarias parceiras. A ideia é que cada pedido vá para uma pizzaria parceira, mas isso ainda está sendo definido.' },
+  { p: 'E se eu tiver alergia?', r: 'A Pizz.ai usa o que você informa para sugerir sabores, mas não substitui a conferência dos ingredientes com a pizzaria. Em caso de alergia, confirme sempre com ela.' },
+  { p: 'Esta página guarda meus dados?', r: 'Não. Os botões desta demonstração só abrem avisos e nada do que você digitar é enviado ou guardado.' },
+];
 ---
 
 <Base
-  title="Projeto Pizzaria: cardápio de pizzas"
-  description="Escolha o sabor e o tamanho da pizza, monte o carrinho e veja o total com desconto. Projeto de estudo, nada é cobrado."
-  ogImage="/og-image.jpg"
+  title="Pizz.ai | Conte quem vai comer e a IA monta o pedido de pizza"
+  description="Projeto em desenvolvimento: a Pizz.ai conversa com você, sugere sabores e tamanhos, divide meio a meio e envia o pedido para a pizzaria parceira. Esta página é uma demonstração."
 >
-  <Cabecalho slot="topo">
-    <CarrinhoSheet client:load miniaturas={miniaturas} />
-  </Cabecalho>
+  <section class="hero" id="inicio" style="scroll-margin-top: 0">
+    <div class="contido hero-grade">
+      <div>
+        <h1>Conte quem vai comer. A Pizz.ai monta o pedido.</h1>
+        <p class="hero-texto">
+          Você diz quantas pessoas são, o que não pode entrar e quanto quer gastar. A IA sugere sabores e tamanhos, divide meio a meio e envia o pedido para a pizzaria parceira.
+        </p>
+        <div class="hero-acoes">
+          <button type="button" class="botao botao-primario" data-abrir="dlg-aviso">Quero testar</button>
+          <a class="botao botao-contorno" href="#exemplo">Ver uma conversa de exemplo</a>
+        </div>
+        <p class="hero-nota">Em desenvolvimento: ainda não é possível fazer pedidos.</p>
+      </div>
+      <div class="hero-pizza">
+        <Pizza id="hero" esq="calabresa" dir="marguerita" rotulo="Pizza dividida meio a meio: calabresa de um lado, marguerita do outro" />
+        <span class="nota-pizza n1" aria-hidden="true">somos 4</span>
+        <span class="nota-pizza n2" aria-hidden="true">sem cebola</span>
+        <span class="nota-pizza n3" aria-hidden="true">até R$ 120</span>
+        <span class="nota-pizza n4" aria-hidden="true">meio a meio</span>
+      </div>
+    </div>
+  </section>
 
-  <div class="mx-auto max-w-6xl px-4 pt-10 pb-16 sm:pt-14">
-    <h1
-      class="selo-titulo mx-auto mb-3 w-fit rounded-full px-10 py-2 text-center text-4xl font-bold tracking-tight sm:px-14 sm:text-5xl"
-    >
-      Pizzas
-    </h1>
-    <p class="mx-auto mb-12 max-w-md text-center text-muted-foreground">
-      Escolha o sabor, o tamanho e a quantidade. O carrinho aplica {Math.round(DESCONTO * 100)}% de desconto no total.
-    </p>
+  <section class="secao secao-alt" id="exemplo" aria-labelledby="t-exemplo" tabindex="-1">
+    <div class="contido">
+      <div data-reveal>
+        <h2 class="titulo-secao" id="t-exemplo">Uma conversa vira um pedido</h2>
+        <p class="secao-intro">
+          Veja como seria. À esquerda, o que a pessoa escreve; à direita, o resumo se montando sozinho.
+        </p>
+      </div>
 
-    <noscript>
-      <p class="mx-auto mb-10 max-w-md rounded-lg border border-border bg-card p-4 text-center text-sm">
-        Para montar o carrinho é preciso ativar o JavaScript. O cardápio abaixo continua visível.
-      </p>
-    </noscript>
+      <div class="demo demo-moldura" data-demo data-reveal style="--i: 1">
+        <div class="demo-topo">
+          <span class="selo-exemplo">Exemplo</span>
+          <p>Conversa ilustrativa. Não é um pedido real.</p>
+        </div>
 
-    <ul class="grid grid-cols-1 gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
-      {
-        pizzas.map((p, i) => (
-          <li class="flex justify-center" data-reveal style={`--i: ${i % 3}`}>
-            <article class="pizza-card relative flex w-full max-w-64 flex-col items-center text-center">
-              <div class="pizza-bolha size-52 overflow-hidden rounded-full">
-                <Picture
-                  src={imagens[p.slug]}
-                  alt={`Pizza ${p.nome} vista de cima`}
-                  width={416}
-                  height={416}
-                  widths={[208, 416]}
-                  sizes="208px"
-                  formats={['avif', 'webp']}
-                  fallbackFormat="webp"
-                  quality={80}
-                  loading={i < 3 ? 'eager' : 'lazy'}
-                  pictureAttributes={{ class: 'block size-full' }}
-                  class="size-full object-cover"
-                />
-              </div>
-              <div
-                class="pizza-mais -mt-6 flex size-12 items-center justify-center rounded-full text-2xl leading-none"
-                aria-hidden="true"
-              >
-                +
-              </div>
-              <p class="mt-2 text-sm text-muted-foreground">
-                a partir de <span class="font-medium text-foreground tabular-nums">{apartirDe(p.precos)}</span>
-              </p>
-              <h2 class="mt-1 text-xl font-bold">
-                <button type="button" class="pizza-abrir cursor-pointer" data-abrir-pizza={p.slug} aria-haspopup="dialog">
-                  {p.nome}
-                </button>
-              </h2>
-              <p class="mt-2 text-sm text-muted-foreground">{p.descricao}</p>
-            </article>
+        <ol class="conversa" aria-label="Conversa de exemplo">
+          <li class="msg msg-eu" data-passo="1"><span class="sr-only">Você: </span>Somos 4. Um não come carne e a gente quer gastar até R$ 120.</li>
+          <li class="msg msg-ia" data-passo="2"><span class="sr-only">Pizz.ai: </span>Fechado. Para 4 pessoas, uma <strong>grande</strong> já serve, e dá para dividir sem deixar o vegetariano de fora. Pode ser meio a meio?</li>
+          <li class="msg msg-eu" data-passo="3"><span class="sr-only">Você: </span>Pode. Ninguém aqui gosta de cebola.</li>
+          <li class="msg msg-ia" data-passo="4"><span class="sr-only">Pizz.ai: </span>Sugestão: grande, meio <strong>calabresa</strong> sem cebola e meio <strong>marguerita</strong>. A marguerita é a metade sem carne. Cabe no limite que você passou.</li>
+          <li class="msg msg-eu" data-passo="5"><span class="sr-only">Você: </span>Manda.</li>
+          <li class="msg msg-ia" data-passo="6"><span class="sr-only">Pizz.ai: </span>Pedido enviado para a pizzaria. Quando ela confirmar, eu aviso por aqui.</li>
+        </ol>
+
+        <div class="demo-resumo">
+          <div class="resumo-pizza">
+            <Pizza id="demo" esq="calabresa" dir="marguerita" etapas rotulo="Pizza grande, meio calabresa e meio marguerita" />
+          </div>
+          <h3>Resumo do pedido</h3>
+          <dl class="resumo-lista">
+            <div data-passo="1"><dt>Pessoas</dt><dd>4</dd></div>
+            <div data-passo="1"><dt>Orçamento</dt><dd>até R$ 120</dd></div>
+            <div data-passo="3"><dt>Restrições</dt><dd>1 sem carne, sem cebola</dd></div>
+            <div data-passo="4"><dt>Tamanho</dt><dd>Grande, 8 fatias</dd></div>
+            <div data-passo="4"><dt>Metade 1</dt><dd>Calabresa, sem cebola</dd></div>
+            <div data-passo="4"><dt>Metade 2</dt><dd>Marguerita</dd></div>
+            <div class="resumo-situacao sit-a" data-passo="4"><dt>Situação</dt><dd>Aguardando sua confirmação</dd></div>
+            <div class="resumo-situacao sit-b" data-passo="6"><dt>Situação</dt><dd>Enviado à pizzaria (exemplo)</dd></div>
+          </dl>
+        </div>
+
+        <div class="demo-acoes">
+          <span>Os dados acima são inventados para a demonstração.</span>
+          <button type="button" class="botao botao-contorno botao-pequeno" data-demo-repetir hidden>Ver de novo</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="secao" id="como-funciona" aria-labelledby="t-como" tabindex="-1">
+    <div class="contido">
+      <div data-reveal>
+        <h2 class="titulo-secao" id="t-como">Quatro passos, todos numa conversa</h2>
+      </div>
+      <ol class="passos">
+        {passos.map((p, i) => (
+          <li class="passo" data-reveal style={`--i: ${i}`}>
+            <span class="passo-n" aria-hidden="true">{i + 1}</span>
+            <h3>{p.t}</h3>
+            <p>{p.d}</p>
           </li>
-        ))
-      }
-    </ul>
-  </div>
+        ))}
+      </ol>
+    </div>
+  </section>
 
-  <PizzaDetalhe client:load>
-    {
-      pizzas.map((p) => (
-        <Picture
-          slot={`p${p.id}`}
-          src={imagens[p.slug]}
-          alt={`Pizza ${p.nome} vista de cima`}
-          width={576}
-          height={576}
-          widths={[288, 576]}
-          sizes="(min-width: 640px) 288px, 224px"
-          formats={['avif', 'webp']}
-          fallbackFormat="webp"
-          quality={82}
-          pictureAttributes={{ class: 'block size-full' }}
-          class="size-full object-cover"
-        />
-      ))
-    }
-  </PizzaDetalhe>
+  <section class="secao secao-alt" id="o-que-faz" aria-labelledby="t-faz" tabindex="-1">
+    <div class="contido">
+      <div data-reveal>
+        <h2 class="titulo-secao" id="t-faz">O que a Pizz.ai resolve por você</h2>
+        <p class="secao-intro">A parte chata de pedir pizza em grupo: quem come o quê, quanto pedir e quanto vai ficar.</p>
+      </div>
+      <ul class="recursos">
+        {recursos.map((r, i) => (
+          <li data-reveal style={`--i: ${i % 2}`}>
+            <h3>
+              <svg class="recurso-fatia" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M12 22 L2.5 6 A12 12 0 0 1 21.5 6 Z" fill="#f6cf6b" stroke="#d9902f" stroke-width="1.6" stroke-linejoin="round"></path>
+                <circle cx="9.5" cy="9" r="2" fill="#cf3f27"></circle>
+                <circle cx="14.5" cy="11" r="2" fill="#cf3f27"></circle>
+              </svg>
+              {r.t}
+            </h3>
+            <p>{r.d}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
 
-  <Rodape slot="rodape" />
+  <section class="secao" id="duvidas" aria-labelledby="t-duvidas" tabindex="-1">
+    <div class="contido">
+      <div data-reveal>
+        <h2 class="titulo-secao" id="t-duvidas">Perguntas frequentes</h2>
+      </div>
+      <div class="faq" data-reveal style="--i: 1">
+        {duvidas.map((d) => (
+          <details>
+            <summary>{d.p}</summary>
+            <div class="resposta">{d.r}</div>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="faixa-escura final" aria-labelledby="t-final">
+    <div class="final-pizza" aria-hidden="true">
+      <Pizza id="final" esq="calabresa" dir="marguerita" />
+    </div>
+    <div class="contido">
+      <h2 id="t-final">Quer saber quando abrir?</h2>
+      <p>Ainda não há data. Entre na lista de espera e a ideia é avisar quando a Pizz.ai estiver pronta. Nesta demonstração, nada é enviado.</p>
+      <button type="button" class="botao botao-claro" data-abrir="dlg-lista">Entrar na lista de espera</button>
+    </div>
+  </section>
 </Base>

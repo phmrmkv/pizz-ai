@@ -1,13 +1,92 @@
-// Interações da página. Tudo aqui é melhoria: sem este arquivo, a página continua legível.
+// Interações da página (docs/transicoes.md). Tudo aqui é melhoria: se este arquivo
+// não carregar, a página continua legível com âncoras e CSS puros.
 
-declare global {
-  interface Window {
-    /** Pizza clicada antes de a ilha do detalhe terminar de carregar. */
-    __pizzaPendente?: string;
+const reduzido = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// Curva do sistema, cubic-bezier(0.22, 1, 0.36, 1), resolvida por Newton-Raphson
+// para a rolagem por JS seguir a mesma sensação das transições em CSS.
+function curvaSuave(t: number): number {
+  const x1 = 0.22, y1 = 1, x2 = 0.36, y2 = 1;
+  const cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx;
+  const cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+  const sx = (u: number) => ((ax * u + bx) * u + cx) * u;
+  const dsx = (u: number) => (3 * ax * u + 2 * bx) * u + cx;
+  let u = t;
+  for (let i = 0; i < 6; i++) {
+    const d = dsx(u);
+    if (Math.abs(d) < 1e-6) break;
+    u -= (sx(u) - t) / d;
   }
+  u = Math.min(1, Math.max(0, u));
+  return ((ay * u + by) * u + cy) * u;
 }
 
-// Cabeçalho: a borda aparece quando a página sai do topo.
+let rolagemAtual = 0;
+function rolarAte(y: number, aoTerminar?: () => void) {
+  cancelAnimationFrame(rolagemAtual);
+  const inicio = window.scrollY;
+  const distancia = y - inicio;
+  if (Math.abs(distancia) < 2) {
+    window.scrollTo(0, y);
+    aoTerminar?.();
+    return;
+  }
+  // 450 a 900 ms conforme a distância; com movimento reduzido, rolagem curta (300 ms).
+  const duracao = reduzido() ? 300 : Math.min(900, Math.max(450, Math.abs(distancia) * 0.25));
+  const t0 = performance.now();
+  const passo = (agora: number) => {
+    const p = Math.min(1, (agora - t0) / duracao);
+    window.scrollTo(0, inicio + distancia * curvaSuave(p));
+    if (p < 1) rolagemAtual = requestAnimationFrame(passo);
+    else aoTerminar?.();
+  };
+  rolagemAtual = requestAnimationFrame(passo);
+}
+
+for (const ev of ['wheel', 'touchstart', 'keydown'] as const) {
+  window.addEventListener(ev, () => cancelAnimationFrame(rolagemAtual), { passive: true });
+}
+
+// Menu do celular
+const menuBotao = document.querySelector<HTMLButtonElement>('[data-menu-botao]');
+const menuPainel = document.querySelector<HTMLElement>('[data-menu-painel]');
+function fecharMenu(devolverFoco = false) {
+  if (!menuBotao || !menuPainel || menuPainel.hidden) return;
+  menuPainel.hidden = true;
+  menuBotao.setAttribute('aria-expanded', 'false');
+  if (devolverFoco) menuBotao.focus();
+}
+if (menuBotao && menuPainel) {
+  menuBotao.addEventListener('click', () => {
+    const abrir = menuPainel.hidden;
+    menuPainel.hidden = !abrir;
+    menuBotao.setAttribute('aria-expanded', String(abrir));
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !menuPainel.hidden) fecharMenu(true);
+  });
+}
+
+// Âncoras internas: rolagem suave com a curva do sistema, foco no destino e hash na URL.
+document.addEventListener('click', (e) => {
+  if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  const link = (e.target as Element | null)?.closest<HTMLAnchorElement>('a[href^="#"]');
+  if (!link) return;
+  const id = decodeURIComponent(link.hash.slice(1));
+  const alvo = id ? document.getElementById(id) : null;
+  if (!alvo) return;
+  e.preventDefault();
+  if (link.closest('[data-menu-painel]')) fecharMenu();
+  history.pushState(null, '', `#${id}`);
+  const margem = parseFloat(getComputedStyle(alvo).scrollMarginTop) || 0;
+  const y = id === 'inicio' ? 0 : alvo.getBoundingClientRect().top + window.scrollY - margem;
+  rolarAte(Math.max(0, y), () => {
+    if (!alvo.hasAttribute('tabindex')) alvo.setAttribute('tabindex', '-1');
+    alvo.focus({ preventScroll: true });
+  });
+});
+
+// Cabeçalho: borda aparece quando a página sai do topo.
 const cabecalho = document.querySelector<HTMLElement>('[data-cabecalho]');
 if (cabecalho) {
   const marcar = () => (cabecalho.dataset.rolado = String(window.scrollY > 8));
@@ -15,13 +94,98 @@ if (cabecalho) {
   window.addEventListener('scroll', marcar, { passive: true });
 }
 
-// Cartão de pizza: avisa a ilha do detalhe (Dialog) qual pizza abrir.
-document.addEventListener('click', (e) => {
-  const alvo = (e.target as Element | null)?.closest<HTMLElement>('[data-abrir-pizza]');
-  if (!alvo) return;
-  const slug = alvo.dataset.abrirPizza ?? '';
-  window.__pizzaPendente = slug;
-  window.dispatchEvent(new CustomEvent('abrir-pizza', { detail: slug }));
+// Seção atual no menu (sublinhado em tomate)
+const nav = document.querySelector<HTMLElement>('[data-nav]');
+if (nav && 'IntersectionObserver' in window) {
+  const links = [...nav.querySelectorAll<HTMLAnchorElement>('a[href*="#"]')];
+  const secoes = links
+    .map((a) => document.getElementById(a.hash.slice(1)))
+    .filter((s): s is HTMLElement => !!s);
+  const visiveis = new Set<string>();
+  const io = new IntersectionObserver(
+    (entradas) => {
+      entradas.forEach((en) => (en.isIntersecting ? visiveis.add(en.target.id) : visiveis.delete(en.target.id)));
+      const atual = secoes.find((s) => visiveis.has(s.id));
+      links.forEach((a) => (atual && a.hash === `#${atual.id}` ? a.setAttribute('aria-current', 'true') : a.removeAttribute('aria-current')));
+    },
+    { rootMargin: '-45% 0px -50% 0px' },
+  );
+  secoes.forEach((s) => io.observe(s));
+}
+
+// Diálogos nativos: o navegador devolve o foco ao botão que abriu ao fechar.
+document.querySelectorAll<HTMLElement>('[data-abrir]').forEach((gatilho) => {
+  gatilho.addEventListener('click', () => {
+    const d = document.getElementById(gatilho.dataset.abrir ?? '') as HTMLDialogElement | null;
+    if (!d) return;
+    // Volta o formulário da lista ao estado inicial
+    d.querySelector<HTMLElement>('[data-lista-form]')?.removeAttribute('hidden');
+    d.querySelector<HTMLElement>('[data-lista-ok]')?.setAttribute('hidden', '');
+    d.querySelector<HTMLFormElement>('form')?.reset();
+    d.showModal();
+  });
+});
+document.querySelectorAll<HTMLDialogElement>('dialog.dlg').forEach((d) => {
+  d.querySelectorAll('[data-fechar]').forEach((b) => b.addEventListener('click', () => d.close()));
+  // Clique no fundo: só vale se o botão do mouse foi apertado e solto no fundo (o próprio <dialog>)
+  let apertouNoFundo = false;
+  d.addEventListener('pointerdown', (e) => (apertouNoFundo = e.target === d));
+  d.addEventListener('click', (e) => {
+    if (e.target === d && apertouNoFundo) d.close();
+    apertouNoFundo = false;
+  });
+});
+const formLista = document.querySelector<HTMLFormElement>('[data-form-lista]');
+formLista?.addEventListener('submit', (e) => {
+  // Validação do navegador já passou; nada é enviado: mostra o aviso no lugar do formulário.
+  e.preventDefault();
+  const d = formLista.closest('dialog');
+  d?.querySelector<HTMLElement>('[data-lista-form]')?.setAttribute('hidden', '');
+  const ok = d?.querySelector<HTMLElement>('[data-lista-ok]');
+  ok?.removeAttribute('hidden');
+  ok?.querySelector<HTMLElement>('[data-fechar]')?.focus();
 });
 
-export {};
+// Demonstração: a conversa se monta uma vez quando aparece na tela.
+const demo = document.querySelector<HTMLElement>('[data-demo]');
+if (demo) {
+  const repetir = demo.querySelector<HTMLButtonElement>('[data-demo-repetir]');
+  const alvos = [...demo.querySelectorAll<HTMLElement>('[data-passo]')];
+  const atrasos = [0, 1200, 2500, 3900, 5400, 6500];
+  let timers: number[] = [];
+
+  const mostrar = (etapa: number) => alvos.forEach((el) => el.classList.toggle('visto', Number(el.dataset.passo) <= etapa));
+  const rodar = () => {
+    timers.forEach(clearTimeout);
+    demo.classList.remove('concluida');
+    demo.classList.add('rodando');
+    mostrar(0);
+    if (repetir) repetir.hidden = true;
+    atrasos.forEach((ms, i) => {
+      timers.push(
+        window.setTimeout(() => {
+          mostrar(i + 1);
+          if (i === atrasos.length - 1) {
+            demo.classList.add('concluida');
+            if (repetir) repetir.hidden = false;
+          }
+        }, 400 + ms),
+      );
+    });
+  };
+
+  if (!reduzido() && 'IntersectionObserver' in window) {
+    // Começa escondida só enquanto espera aparecer; sem o observer, tudo fica visível.
+    const io = new IntersectionObserver(
+      (entradas) => {
+        if (entradas.some((e) => e.isIntersecting)) {
+          io.disconnect();
+          rodar();
+        }
+      },
+      { threshold: 0.35 },
+    );
+    io.observe(demo);
+    repetir?.addEventListener('click', rodar);
+  }
+}
