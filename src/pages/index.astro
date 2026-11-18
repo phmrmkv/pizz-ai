@@ -6,7 +6,7 @@ const passos = [
   { t: 'Você conta como vai ser', d: 'Quantas pessoas são, quem não come carne, o que não pode levar e quanto quer gastar. Escreva do jeito que falaria.' },
   { t: 'A Pizz.ai sugere', d: 'Ela propõe tamanho e sabores para o grupo e explica por que escolheu cada um.' },
   { t: 'Você ajusta na conversa', d: 'Mudou de ideia? Diga “tira a calabresa” ou “quero mais barato” e o resumo do pedido muda na hora.' },
-  { t: 'O pedido vai para a pizzaria', d: 'Com o resumo conferido por você, a Pizz.ai vai enviar o pedido para a pizzaria que você escolher e avisar quando ela responder.' },
+  { t: 'O pedido vai para a pizzaria', d: 'A Pizz.ai vai procurar pizzarias perto de vocês e, com o resumo conferido, enviar o pedido para a que você escolher e avisar quando ela responder.' },
 ];
 
 const recursos = [
@@ -66,7 +66,7 @@ const duvidas = [
       <div class="demo demo-moldura" data-demo data-reveal style="--i: 1">
         <div class="demo-topo">
           <span class="selo-exemplo">Exemplo</span>
-          <p>Conversa ilustrativa. Não é um pedido real.</p>
+          <p>Conversa ilustrativa. A pizzaria, a nota e as avaliações são fictícias; não é um pedido real.</p>
         </div>
 
         <ol class="conversa" aria-label="Conversa de exemplo">
@@ -74,8 +74,21 @@ const duvidas = [
           <li class="msg msg-ia" data-passo="2"><span class="sr-only">Pizz.ai: </span>Fechado. Para 4 pessoas, uma <strong>grande</strong> já serve, e dá para dividir sem deixar o vegetariano de fora. Pode ser meio a meio?</li>
           <li class="msg msg-eu" data-passo="3"><span class="sr-only">Você: </span>Pode. Ninguém aqui gosta de cebola.</li>
           <li class="msg msg-ia" data-passo="4"><span class="sr-only">Pizz.ai: </span>Sugestão: grande, meio <strong>calabresa</strong> sem cebola e meio <strong>marguerita</strong>. A marguerita é a metade sem carne. Cabe no limite que você passou.</li>
-          <li class="msg msg-eu" data-passo="5"><span class="sr-only">Você: </span>Manda.</li>
-          <li class="msg msg-ia" data-passo="6"><span class="sr-only">Pizz.ai: </span>Pedido enviado para a pizzaria. Quando ela confirmar, eu aviso por aqui.</li>
+          <li class="msg msg-ia msg-cartao" data-passo="5">
+            <span class="sr-only">Pizz.ai: </span>Achei uma pizzaria perto de vocês que faz meio a meio e está aberta agora:
+            <div class="cartao-pizzaria">
+              <p class="cp-nome">Forno da Esquina <span class="cp-ficticia">(fictícia)</span></p>
+              <p class="cp-nota"><svg class="cp-estrela" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3 6.1 20.6l1.3-6.6L2.5 9.4l6.6-.8z" fill="currentColor"></path></svg><strong aria-hidden="true">4,89</strong><span class="sr-only">Nota 4,89 de 5. </span><span>1.500 avaliações</span></p>
+              <ul class="cp-dados">
+                <li>1,2 km de vocês</li>
+                <li>Entrega em 25 a 35 min</li>
+                <li>Aberta agora</li>
+                <li>Faz meio a meio</li>
+              </ul>
+            </div>
+          </li>
+          <li class="msg msg-eu" data-passo="6"><span class="sr-only">Você: </span>Serve. Pode pedir lá.</li>
+          <li class="msg msg-ia" data-passo="7"><span class="sr-only">Pizz.ai: </span>Pedido enviado para a Forno da Esquina. Quando ela confirmar, eu aviso por aqui.</li>
         </ol>
 
         <div class="demo-resumo">
@@ -90,13 +103,15 @@ const duvidas = [
             <div data-passo="4"><dt>Tamanho</dt><dd>Grande, 8 fatias</dd></div>
             <div data-passo="4"><dt>Metade 1</dt><dd>Calabresa, sem cebola</dd></div>
             <div data-passo="4"><dt>Metade 2</dt><dd>Marguerita</dd></div>
+            <div data-passo="5"><dt>Pizzaria</dt><dd>Forno da Esquina (fictícia)</dd></div>
+            <div data-passo="5"><dt>Entrega estimada</dt><dd>25 a 35 min</dd></div>
             <div class="resumo-situacao sit-a" data-passo="4"><dt>Situação</dt><dd>Aguardando sua confirmação</dd></div>
-            <div class="resumo-situacao sit-b" data-passo="6"><dt>Situação</dt><dd>Enviado à pizzaria (exemplo)</dd></div>
+            <div class="resumo-situacao sit-b" data-passo="7"><dt>Situação</dt><dd>Enviado à pizzaria (exemplo)</dd></div>
           </dl>
         </div>
 
         <div class="demo-acoes">
-          <span>Os dados acima são inventados para a demonstração.</span>
+          <span>Tudo acima é inventado para a demonstração, inclusive a pizzaria.</span>
           <button type="button" class="botao botao-contorno botao-pequeno" data-demo-controle hidden>Pausar</button>
         </div>
       </div>

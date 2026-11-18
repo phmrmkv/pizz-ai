@@ -52,19 +52,25 @@ for (const ev of ['wheel', 'touchstart', 'keydown'] as const) {
 const menuBotao = document.querySelector<HTMLButtonElement>('[data-menu-botao]');
 const menuPainel = document.querySelector<HTMLElement>('[data-menu-painel]');
 function fecharMenu(devolverFoco = false) {
-  if (!menuBotao || !menuPainel || menuPainel.hidden) return;
-  menuPainel.hidden = true;
+  if (!menuBotao || !menuPainel || !menuPainel.hasAttribute('data-aberto')) return;
+  menuPainel.removeAttribute('data-aberto');
   menuBotao.setAttribute('aria-expanded', 'false');
   if (devolverFoco) menuBotao.focus();
 }
 if (menuBotao && menuPainel) {
   menuBotao.addEventListener('click', () => {
-    const abrir = menuPainel.hidden;
-    menuPainel.hidden = !abrir;
+    const abrir = !menuPainel.hasAttribute('data-aberto');
+    menuPainel.toggleAttribute('data-aberto', abrir);
     menuBotao.setAttribute('aria-expanded', String(abrir));
   });
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !menuPainel.hidden) fecharMenu(true);
+    if (e.key === 'Escape' && menuPainel.hasAttribute('data-aberto')) fecharMenu(true);
+  });
+  // Clique fora do menu fecha (sem roubar o foco do que foi clicado)
+  document.addEventListener('click', (e) => {
+    if (!menuPainel.hasAttribute('data-aberto')) return;
+    const alvo = e.target as Node;
+    if (!menuPainel.contains(alvo) && !menuBotao.contains(alvo)) fecharMenu();
   });
 }
 
@@ -152,7 +158,7 @@ const demo = document.querySelector<HTMLElement>('[data-demo]');
 if (demo) {
   const controle = demo.querySelector<HTMLButtonElement>('[data-demo-controle]');
   const alvos = [...demo.querySelectorAll<HTMLElement>('[data-passo]')];
-  const intervalos = [400, 1200, 1300, 1400, 1500, 1100]; // espera antes de cada mensagem (ms)
+  const intervalos = [400, 1200, 1300, 1400, 1700, 1500, 1100]; // espera antes de cada mensagem (ms)
   let proximo = 0;
   let timer = 0;
   let estado: 'rodando' | 'pausada' | 'concluida' = 'rodando';

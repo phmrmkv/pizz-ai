@@ -173,8 +173,8 @@ a:hover > .logo .fatia { transform: translate(1.5px, -1.5px); }
 :root[data-theme="dark"] .tema-icone-lua { display: none; }
 
 .menu-painel { border-top: 1px solid var(--linha); background: var(--fundo); padding: 8px 20px 16px; }
-.menu-painel[hidden] { display: none; }
-.menu-painel:not([hidden]) { animation: menu-entra var(--dur-open) var(--ease-out-soft); }
+.js .menu-painel:not([data-aberto]) { display: none; }
+.js .menu-painel[data-aberto] { animation: menu-entra var(--dur-open) var(--ease-out-soft); }
 .menu-painel a { display: flex; align-items: center; min-height: 48px; padding-inline: 4px; color: var(--tinta); text-decoration: none; font-weight: 600; font-size: 1.1rem; border-bottom: 1px solid var(--linha); }
 .menu-painel a:last-child { border-bottom: 0; }
 @keyframes menu-entra { from { opacity: 0; transform: translateY(-6px); } }
@@ -250,6 +250,16 @@ a:hover > .logo .fatia { transform: translate(1.5px, -1.5px); }
 .msg-eu { align-self: flex-end; background: var(--bolha-eu); color: var(--sobre-bolha-eu); border-bottom-right-radius: 6px; }
 .msg-ia { align-self: flex-start; background: var(--bolha-ia); color: var(--tinta); border: 1px solid var(--linha); border-bottom-left-radius: 6px; }
 .msg-ia strong { font-weight: 700; }
+.msg-cartao { max-width: min(94%, 28rem); }
+.cartao-pizzaria { margin-top: 10px; padding: 12px 14px; border: 1px solid var(--linha); border-radius: 14px; background: var(--fundo-2); color: var(--tinta); }
+.cp-nome { font-family: var(--fonte-titulo); font-weight: 800; font-size: 1.15rem; letter-spacing: -0.02em; line-height: 1.2; }
+.cp-ficticia { font-family: var(--fonte-texto); font-weight: 600; font-size: 0.85rem; letter-spacing: 0; color: var(--destaque); }
+.cp-nota { display: flex; align-items: center; gap: 6px; margin-top: 4px; font-size: 0.95rem; color: var(--tinta-2); }
+.cp-nota strong { color: var(--tinta); font-size: 1.05rem; }
+.cp-estrela { flex: none; width: 18px; height: 18px; color: #a35a00; }
+:root[data-theme="dark"] .cp-estrela { color: #f0b24d; }
+.cp-dados { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.cp-dados li { padding: 3px 10px; border-radius: 999px; border: 1px solid var(--controle); font-size: 0.85rem; line-height: 1.4; color: var(--tinta); background: var(--superficie); }
 .demo-resumo { padding: 24px 20px 28px; border-top: 1px solid var(--linha); background: var(--fundo); }
 @media (min-width: 960px) { .demo-resumo { border-top: 0; border-left: 1px solid var(--linha); } }
 @media (min-width: 768px) { .demo-resumo { padding: 32px; } }
@@ -321,9 +331,10 @@ a:hover > .logo .fatia { transform: translate(1.5px, -1.5px); }
 
 .rodape { background: var(--forno); color: var(--sobre-forno); border-top: 1px solid rgb(255 255 255 / 0.12); padding-block: 40px 48px; font-size: 0.95rem; }
 .rodape .logo { color: var(--sobre-forno); }
+.rodape-credito { margin-top: 12px; }
 .rodape p { margin-top: 12px; max-width: 44rem; color: var(--sobre-forno-2); }
-.rodape a:not(.logo) { color: var(--sobre-forno); text-decoration: underline; text-underline-offset: 0.2em; }
-.rodape a:not(.logo):hover { color: var(--foco-escuro); }
+.rodape a:not(.logo):not(.phmr-credito):not(.rodape-logo) { color: var(--sobre-forno); text-decoration: underline; text-underline-offset: 0.2em; }
+.rodape a:not(.logo):not(.phmr-credito):not(.rodape-logo):hover { color: var(--foco-escuro); }
 
 /* ------- Diálogos nativos ------- */
 dialog.dlg {
@@ -372,10 +383,13 @@ html:has(dialog[open]) { overflow: hidden; }
   .js [data-reveal] { transform: none; filter: none; transition: opacity var(--dur-enter) var(--ease-out-soft); transition-delay: 0ms; }
   dialog.dlg, dialog.dlg[open] { transform: none; }
   @starting-style { dialog.dlg[open] { transform: none; } }
-  .menu-painel:not([hidden]) { animation: fade-in-soft var(--dur-open) var(--ease-out-soft); }
+  .js .menu-painel[data-aberto] { animation: fade-in-soft var(--dur-open) var(--ease-out-soft); }
   .faq details[open] .resposta { animation: fade-in-soft var(--dur-open) var(--ease-out-soft); }
   .demo.rodando [data-passo]:not(.visto) { transform: none; filter: none; }
   .demo.rodando .pz-topo:not(.visto) { transform: none; }
   a:hover > .logo .fatia { transform: none; }
 }
 @keyframes fade-in-soft { from { opacity: 0; } }
+
+/* Sem JS: botões que dependem de script somem e o menu vira uma lista simples */
+html:not(.js) [data-abrir], html:not(.js) [data-tema-botao], html:not(.js) .menu-botao { display: none; }

@@ -16,4 +16,4 @@ Site publicado em: https://pizzai.libertycondominio.online (hospedagem estática
 
 Origem: começou como estudo de curso (Projeto Pizzaria). A versão original em HTML + CSS + JavaScript está em `referencias/original/`, fora do build.
 
-Produto em desenvolvimento pela PHMR Tech Solutions. Projeto de Paulo H. M. Rabelo · [PHMR Tech Solutions](https://phmr.com.br)
+Produto em desenvolvimento pela PHMR Tech Solutions. Desenvolvido por [PHMR Tech Solutions](https://phmr.com.br/)
